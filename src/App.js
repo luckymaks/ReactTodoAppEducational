@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import s from './App.module.css';
 import Header from './components/Header/Header';
 import TodoList from './components/TodoList/TodoList';
+import Filters from './components/Filters/Filters';
 import {createTodo} from './utils/creators';
 
 class App extends React.Component  {
@@ -19,6 +20,7 @@ class App extends React.Component  {
     this.handleTodoClick = this.handleTodoClick.bind(this);
     this.handleTodoRemoveClick = this.handleTodoRemoveClick.bind(this);
     this.getCompletedCount = this.getCompletedCount.bind(this);
+    this.onChangeCompleted = this.onChangeCompleted.bind(this);
   }
 
   onChangeInputText(inputValue) {
@@ -68,6 +70,20 @@ class App extends React.Component  {
       .filter(i => i.completed)
       .length;
   }
+  onChangeCompleted(e) {
+    const value = e.target.value;
+    if(value === 'shoAll'){
+      return this.state.todos;
+    } else if(value === 'completed') {
+      this.setState({
+        todos: this.state.todos.filter(i => i.completed === true),
+      });
+    } else {
+      this.setState({
+        todos: this.state.todos.filter(i => i.completed !== true),
+      });
+    }
+  }
 
   render() {
     return (
@@ -78,6 +94,10 @@ class App extends React.Component  {
             value={this.state.inputValue}
             onChangeText={this.onChangeInputText}
             onClick={this.handleAddTodo}
+          />
+
+          <Filters
+            onChange={this.onChangeCompleted}  
           />
 
           <TodoList
