@@ -7,7 +7,9 @@ const TodoList = ({
     items,
     onTodoClick,
     onTodoRemoveClick
-}) => (
+}) => {
+    items.map(i => console.log(i));
+    return (
     <ul style={{listStyleType: 'none', margin: 0, padding: 0}}>
         {items.map(i => (
             <TodoItem 
@@ -18,7 +20,7 @@ const TodoList = ({
             />
         ))}
     </ul>
-);
+)};
 
 TodoList.propTypes = {
     value: T.string,

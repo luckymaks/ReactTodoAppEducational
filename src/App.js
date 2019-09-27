@@ -36,10 +36,19 @@ class App extends React.Component  {
       return;
     }
     const todo = createTodo(this.state.inputValue);
+    const dataId = new Date().getTime();
+    localStorage.setItem(dataId, JSON.stringify(todo));
+    for(let i=0; i < localStorage.length; i++) {
+      let key = localStorage.key(i);
+      this.state.todos.push(JSON.parse(localStorage.getItem(key)));
+      console.log(this.state.todos);
+      //alert(`${key}: ${localStorage.getItem(key)}`);
+    }
     this.setState({
       inputValue: '',
-      todos: [todo].concat(this.state.todos),
+      //todos: this.state.todos.concat(newTodosList),
     });
+    
     this._inputRef.current.focus();
   }
 
@@ -70,6 +79,7 @@ class App extends React.Component  {
       .filter(i => i.completed)
       .length;
   }
+  
   onChangeCompleted(e) {
     const value = e.target.value;
     if(value === 'shoAll'){
@@ -77,11 +87,11 @@ class App extends React.Component  {
     } else if(value === 'completed') {
       this.setState({
         todos: this.state.todos.filter(i => i.completed === true),
-      });
+      })
     } else {
       this.setState({
         todos: this.state.todos.filter(i => i.completed !== true),
-      });
+      })
     }
   }
 
