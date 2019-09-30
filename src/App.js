@@ -33,8 +33,8 @@ class App extends React.Component  {
     }
 
     this.setState({
-      todos: this.state.todos.concat(list),
-    })
+      todos: arrKeys || this.state.todos.concat(list),
+    });
   }
 
   onChangeInputText(inputValue) {
@@ -81,11 +81,14 @@ class App extends React.Component  {
   }
 
   handleTodoRemoveClick(id) {
-    const delTodo = this.state.todos.filter(i => i.id !== id);
-    localStorage.setItem('ShowAll', JSON.stringify(delTodo));
+    //const delTodo = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
+    const ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
+    const todoListCompleted = ListTodo.ShowAll.filter(i => i.id !== id);
+    console.log(ListTodo.ShowAll);
+    localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
     
     this.setState({
-      todos: delTodo,
+      todos: JSON.parse(localStorage.getItem('ShowAll')),
     })
   }
 
@@ -97,18 +100,27 @@ class App extends React.Component  {
   
   onChangeCompleted(e) {
     const value = e.target.value;
-    if(value === 'shoAll'){
-      console.log(e.target);
+    const showAll = JSON.parse(localStorage.getItem('ShowAll'));
+    
+    if(value === 'showAll'){
       this.setState({
-        todos: this.state.todos
+        todos: showAll,
       })
     } else if(value === 'completed') {
+      const todoListCompleted = showAll.filter(i => i.completed === true);
+      localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
       this.setState({
-        todos: this.state.todos.filter(i => i.completed === true),
+        todos: JSON.parse(localStorage.getItem('Completed')),
       })
     } else if(value === 'noCompleted'){
+      const todoListNoCompleted = showAll.filter(i => i.completed === false);
+      localStorage.setItem('NoCompleted', JSON.stringify(todoListNoCompleted));
       this.setState({
-        todos: this.state.todos.filter(i => i.completed !== true),
+        todos: JSON.parse(localStorage.getItem('NoCompleted')),
+      })
+    } else {
+      this.setState({
+        todos: showAll.ShowAll,
       })
     }
   }
