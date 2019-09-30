@@ -23,30 +23,40 @@ class App extends React.Component  {
     this.onChangeCompleted = this.onChangeCompleted.bind(this);
   }
 
+  componentDidMount() {
+    let list = [];
+    const arrKeys = JSON.parse(localStorage.getItem('ShowAll'));
+    for(let keys in arrKeys){
+      for(let i = 0; i < arrKeys[keys].length; i++) {
+        list.push(arrKeys[keys][i]);
+      }
+    }
+
+    this.setState({
+      todos: this.state.todos.concat(list),
+    })
+  }
+
   onChangeInputText(inputValue) {
     this.setState({
-      inputValue
+      inputValue,
     });
   };
 
   handleAddTodo() {
+    
     const { inputValue } = this.state;
 
     if(inputValue.trim().length === 0) {
       return;
     }
     const todo = createTodo(this.state.inputValue);
-    const dataId = new Date().getTime();
-    localStorage.setItem(dataId, JSON.stringify(todo));
-    for(let i=0; i < localStorage.length; i++) {
-      let key = localStorage.key(i);
-      this.state.todos.push(JSON.parse(localStorage.getItem(key)));
-      console.log(this.state.todos);
-      //alert(`${key}: ${localStorage.getItem(key)}`);
-    }
+    const arr = [todo].concat(this.state.todos);
+    localStorage.setItem('ShowAll', JSON.stringify({ShowAll: arr}));
+    
     this.setState({
       inputValue: '',
-      //todos: this.state.todos.concat(newTodosList),
+      todos: [todo].concat(this.state.todos),
     });
     
     this._inputRef.current.focus();
@@ -62,6 +72,8 @@ class App extends React.Component  {
     todo.completed = !todo.completed;
     const newTodos = [...this.state.todos];
     newTodos[currentTodoIndex] = todo;
+    localStorage.setItem('ShowAll', JSON.stringify(newTodos));
+    
 
     this.setState({
       todos: newTodos,
@@ -69,8 +81,11 @@ class App extends React.Component  {
   }
 
   handleTodoRemoveClick(id) {
+    const delTodo = this.state.todos.filter(i => i.id !== id);
+    localStorage.setItem('ShowAll', JSON.stringify(delTodo));
+    
     this.setState({
-      todos: this.state.todos.filter(i => i.id !== id),
+      todos: delTodo,
     })
   }
 
@@ -83,12 +98,15 @@ class App extends React.Component  {
   onChangeCompleted(e) {
     const value = e.target.value;
     if(value === 'shoAll'){
-      return this.state.todos;
+      console.log(e.target);
+      this.setState({
+        todos: this.state.todos
+      })
     } else if(value === 'completed') {
       this.setState({
         todos: this.state.todos.filter(i => i.completed === true),
       })
-    } else {
+    } else if(value === 'noCompleted'){
       this.setState({
         todos: this.state.todos.filter(i => i.completed !== true),
       })

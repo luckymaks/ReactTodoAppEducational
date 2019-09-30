@@ -8,7 +8,6 @@ const TodoList = ({
     onTodoClick,
     onTodoRemoveClick
 }) => {
-    items.map(i => console.log(i));
     return (
     <ul style={{listStyleType: 'none', margin: 0, padding: 0}}>
         {items.map(i => (
