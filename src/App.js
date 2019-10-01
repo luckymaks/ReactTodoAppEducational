@@ -12,6 +12,9 @@ class App extends React.Component  {
     this.state = {
       inputValue: '',
       todos: [],
+      todoListShow: true,
+      todoListCompleted: false,
+      todoListNoCompleted: false,
     };
 
     this._inputRef = React.createRef();
@@ -81,13 +84,34 @@ class App extends React.Component  {
   }
 
   handleTodoRemoveClick(id) {
-    const ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
-    const todoListCompleted = ListTodo.filter(i => i.id !== id);
-    localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
-    
-    this.setState({
-      todos: JSON.parse(localStorage.getItem('ShowAll')),
-    })
+    let ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
+    let todoListCompleted = [];
+    if(this.state.todoListShow) {
+      todoListCompleted = ListTodo.filter(i => i.id !== id);
+      console.log(todoListCompleted)
+      localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
+      this.setState({
+        todos: JSON.parse(localStorage.getItem('ShowAll')),
+      });
+    } else if(this.state.todoListCompleted) {
+      const todoList = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
+      localStorage.setItem('ShowAll', JSON.stringify(todoList));
+      ListTodo = JSON.parse(localStorage.getItem('Completed'));
+      todoListCompleted = ListTodo.filter(i => i.id !== id);
+      localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
+      this.setState({
+        todos: JSON.parse(localStorage.getItem('Completed')),
+      });
+    } else if(this.state.todoListNoCompleted) {
+      const todoList = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
+      localStorage.setItem('ShowAll', JSON.stringify(todoList));
+      ListTodo = JSON.parse(localStorage.getItem('NoCompleted'));
+      todoListCompleted = ListTodo.filter(i => i.id !== id);
+      localStorage.setItem('NoCompleted', JSON.stringify(todoListCompleted));
+      this.setState({
+        todos: JSON.parse(localStorage.getItem('NoCompleted')),
+      });
+    }
   }
 
   getCompletedCount() {
@@ -103,18 +127,27 @@ class App extends React.Component  {
     if(value === 'showAll'){
       this.setState({
         todos: showAll,
+        todoListShow: true,
+        todoListCompleted: false,
+        todoListNoCompleted: false,
       })
     } else if(value === 'completed') {
       const todoListCompleted = showAll.filter(i => i.completed === true);
       localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('Completed')),
+        todoListShow: false,
+        todoListCompleted: true,
+        todoListNoCompleted: false,
       })
     } else if(value === 'noCompleted'){
       const todoListNoCompleted = showAll.filter(i => i.completed === false);
       localStorage.setItem('NoCompleted', JSON.stringify(todoListNoCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('NoCompleted')),
+        todoListShow: false,
+       todoListCompleted: false,
+        todoListNoCompleted: true,
       })
     }
   }
