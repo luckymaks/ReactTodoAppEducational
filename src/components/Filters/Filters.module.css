@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    padding: 5px;
+    border-bottom: 1px solid black;
+    justify-content: space-between;
+}
+
+.completed {
+    text-decoration: line-through; 
+}
+
+.item {
+    padding-left: 5px;
+    padding-right: 5px;
+    border-right: 1px solid black;
+}
+.item:last-child {
+    border-right: none;
+}
