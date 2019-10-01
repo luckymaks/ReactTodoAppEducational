@@ -11,8 +11,7 @@ class App extends React.Component  {
     super(props);
     this.state = {
       inputValue: '',
-      todos: [],
-      staticTodos: JSON.parse(localStorage.getItem('ShowAll')),
+      todos: JSON.parse(localStorage.getItem('ShowAll')),
       todoListShow: false,
       todoListCompleted: false,
       todoListNoCompleted: false,
@@ -29,14 +28,14 @@ class App extends React.Component  {
 
   componentDidMount() {
     let list = [];
-    for(let keys in this.state.staticTodos){
-      for(let i = 0; i < this.state.staticTodos[keys].length; i++) {
-        list.push(this.state.staticTodos[keys][i]);
+    for(let keys in this.state.todos){
+      for(let i = 0; i < this.state.todos[keys].length; i++) {
+        list.push(this.state.todos[keys][i]);
       }
     }
 
     this.setState({
-      todos: this.state.staticTodos || this.state.todos.concat(list),
+      todos: this.state.todos || this.state.todos.concat(list),
     });
   }
 
@@ -54,12 +53,12 @@ class App extends React.Component  {
       return;
     }
     const todo = createTodo(this.state.inputValue);
-    const arr = [todo].concat(this.state.staticTodos);
+    const arr = [todo].concat(this.state.todos);
     localStorage.setItem('ShowAll', JSON.stringify(arr));
     
     this.setState({
       inputValue: '',
-      todos: [todo].concat(this.state.staticTodos),
+      todos: [todo].concat(this.state.todos),
     });
     
     this._inputRef.current.focus();
@@ -83,7 +82,6 @@ class App extends React.Component  {
   }
 
   handleTodoRemoveClick(id) {
-    console.log(id);
     let ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
     let todoListCompleted = [];
     if(this.state.todoListShow) {
@@ -93,6 +91,8 @@ class App extends React.Component  {
         todos: JSON.parse(localStorage.getItem('ShowAll')),
       });
     } else if(this.state.todoListCompleted) {
+      const todoList = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
+      localStorage.setItem('ShowAll', JSON.stringify(todoList));
       ListTodo = JSON.parse(localStorage.getItem('Completed'));
       todoListCompleted = ListTodo.filter(i => i.id !== id);
       localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
@@ -100,6 +100,8 @@ class App extends React.Component  {
         todos: JSON.parse(localStorage.getItem('Completed')),
       });
     } else if(this.state.todoListNoCompleted) {
+      const todoList = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
+      localStorage.setItem('ShowAll', JSON.stringify(todoList));
       ListTodo = JSON.parse(localStorage.getItem('NoCompleted'));
       todoListCompleted = ListTodo.filter(i => i.id !== id);
       localStorage.setItem('NoCompleted', JSON.stringify(todoListCompleted));
@@ -107,7 +109,6 @@ class App extends React.Component  {
         todos: JSON.parse(localStorage.getItem('NoCompleted')),
       });
     }
-    
   }
 
   getCompletedCount() {
@@ -118,17 +119,16 @@ class App extends React.Component  {
   
   onChangeCompleted(e) {
     const value = e.target.value;
-    const checked = e.target.checked;
     const showAll = JSON.parse(localStorage.getItem('ShowAll'));
     
-    if(value === 'showAll' && checked){
+    if(value === 'showAll'){
       this.setState({
         todos: showAll,
         todoListShow: true,
         todoListCompleted: false,
         todoListNoCompleted: false,
       })
-    } else if(value === 'completed' && checked) {
+    } else if(value === 'completed') {
       const todoListCompleted = showAll.filter(i => i.completed === true);
       localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
       this.setState({
@@ -137,7 +137,7 @@ class App extends React.Component  {
         todoListCompleted: true,
         todoListNoCompleted: false,
       })
-    } else if(value === 'noCompleted' && checked){
+    } else if(value === 'noCompleted'){
       const todoListNoCompleted = showAll.filter(i => i.completed === false);
       localStorage.setItem('NoCompleted', JSON.stringify(todoListNoCompleted));
       this.setState({
