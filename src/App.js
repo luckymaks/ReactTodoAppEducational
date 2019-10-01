@@ -12,6 +12,10 @@ class App extends React.Component  {
     this.state = {
       inputValue: '',
       todos: [],
+      staticTodos: JSON.parse(localStorage.getItem('ShowAll')),
+      todoListShow: false,
+      todoListCompleted: false,
+      todoListNoCompleted: false,
     };
 
     this._inputRef = React.createRef();
@@ -25,15 +29,14 @@ class App extends React.Component  {
 
   componentDidMount() {
     let list = [];
-    const arrKeys = JSON.parse(localStorage.getItem('ShowAll'));
-    for(let keys in arrKeys){
-      for(let i = 0; i < arrKeys[keys].length; i++) {
-        list.push(arrKeys[keys][i]);
+    for(let keys in this.state.staticTodos){
+      for(let i = 0; i < this.state.staticTodos[keys].length; i++) {
+        list.push(this.state.staticTodos[keys][i]);
       }
     }
 
     this.setState({
-      todos: arrKeys || this.state.todos.concat(list),
+      todos: this.state.staticTodos || this.state.todos.concat(list),
     });
   }
 
@@ -51,12 +54,12 @@ class App extends React.Component  {
       return;
     }
     const todo = createTodo(this.state.inputValue);
-    const arr = [todo].concat(this.state.todos);
-    localStorage.setItem('ShowAll', JSON.stringify({ShowAll: arr}));
+    const arr = [todo].concat(this.state.staticTodos);
+    localStorage.setItem('ShowAll', JSON.stringify(arr));
     
     this.setState({
       inputValue: '',
-      todos: [todo].concat(this.state.todos),
+      todos: [todo].concat(this.state.staticTodos),
     });
     
     this._inputRef.current.focus();
@@ -73,7 +76,6 @@ class App extends React.Component  {
     const newTodos = [...this.state.todos];
     newTodos[currentTodoIndex] = todo;
     localStorage.setItem('ShowAll', JSON.stringify(newTodos));
-    
 
     this.setState({
       todos: newTodos,
@@ -81,15 +83,31 @@ class App extends React.Component  {
   }
 
   handleTodoRemoveClick(id) {
-    //const delTodo = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
-    const ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
-    const todoListCompleted = ListTodo.ShowAll.filter(i => i.id !== id);
-    console.log(ListTodo.ShowAll);
-    localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
+    console.log(id);
+    let ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
+    let todoListCompleted = [];
+    if(this.state.todoListShow) {
+      todoListCompleted = ListTodo.filter(i => i.id !== id);
+      localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
+      this.setState({
+        todos: JSON.parse(localStorage.getItem('ShowAll')),
+      });
+    } else if(this.state.todoListCompleted) {
+      ListTodo = JSON.parse(localStorage.getItem('Completed'));
+      todoListCompleted = ListTodo.filter(i => i.id !== id);
+      localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
+      this.setState({
+        todos: JSON.parse(localStorage.getItem('Completed')),
+      });
+    } else if(this.state.todoListNoCompleted) {
+      ListTodo = JSON.parse(localStorage.getItem('NoCompleted'));
+      todoListCompleted = ListTodo.filter(i => i.id !== id);
+      localStorage.setItem('NoCompleted', JSON.stringify(todoListCompleted));
+      this.setState({
+        todos: JSON.parse(localStorage.getItem('NoCompleted')),
+      });
+    }
     
-    this.setState({
-      todos: JSON.parse(localStorage.getItem('ShowAll')),
-    })
   }
 
   getCompletedCount() {
@@ -100,27 +118,33 @@ class App extends React.Component  {
   
   onChangeCompleted(e) {
     const value = e.target.value;
+    const checked = e.target.checked;
     const showAll = JSON.parse(localStorage.getItem('ShowAll'));
     
-    if(value === 'showAll'){
+    if(value === 'showAll' && checked){
       this.setState({
         todos: showAll,
+        todoListShow: true,
+        todoListCompleted: false,
+        todoListNoCompleted: false,
       })
-    } else if(value === 'completed') {
+    } else if(value === 'completed' && checked) {
       const todoListCompleted = showAll.filter(i => i.completed === true);
       localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('Completed')),
+        todoListShow: false,
+        todoListCompleted: true,
+        todoListNoCompleted: false,
       })
-    } else if(value === 'noCompleted'){
+    } else if(value === 'noCompleted' && checked){
       const todoListNoCompleted = showAll.filter(i => i.completed === false);
       localStorage.setItem('NoCompleted', JSON.stringify(todoListNoCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('NoCompleted')),
-      })
-    } else {
-      this.setState({
-        todos: showAll.ShowAll,
+        todoListShow: false,
+        todoListCompleted: false,
+        todoListNoCompleted: true,
       })
     }
   }
