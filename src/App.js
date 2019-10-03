@@ -54,14 +54,32 @@ class App extends React.Component  {
       return;
     }
     const todo = createTodo(this.state.inputValue);
-    const arr = [todo].concat(this.state.todos);
-    localStorage.setItem('ShowAll', JSON.stringify(arr));
+    let arr = [];
     
-    this.setState({
-      inputValue: '',
-      todos: [todo].concat(this.state.todos),
-    });
-    
+    if(this.state.todoListShow) {
+      arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
+      localStorage.setItem('ShowAll', JSON.stringify(arr));
+      this.setState({
+        inputValue: '',
+        todos: JSON.parse(localStorage.getItem('ShowAll')),
+      });
+    } else if(this.state.todoListCompleted) {
+      arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
+      localStorage.setItem('ShowAll', JSON.stringify(arr))
+      this.setState({
+        inputValue: '',
+        todos: JSON.parse(localStorage.getItem('Completed')),
+      });
+    } else if(this.state.todoListNoCompleted) {
+      const arrShow = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
+      arr = [todo].concat(JSON.parse(localStorage.getItem('NoCompleted')));
+      localStorage.setItem('NoCompleted', JSON.stringify(arr));
+      localStorage.setItem('ShowAll', JSON.stringify(arrShow));
+      this.setState({
+        inputValue: '',
+        todos: JSON.parse(localStorage.getItem('NoCompleted')),
+      });
+    }
     this._inputRef.current.focus();
   }
 
