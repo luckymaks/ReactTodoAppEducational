@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import logo from './logo.svg';
 import s from './App.module.css';
 import Header from './components/Header/Header';
@@ -16,7 +17,6 @@ class App extends React.Component  {
       todoListCompleted: false,
       todoListNoCompleted: false,
     };
-
     this._inputRef = React.createRef();
     this.onChangeInputText = this.onChangeInputText.bind(this);
     this.handleAddTodo = this.handleAddTodo.bind(this);
@@ -47,15 +47,15 @@ class App extends React.Component  {
   };
 
   handleAddTodo() {
-    
     const { inputValue } = this.state;
 
     if(inputValue.trim().length === 0) {
       return;
     }
+
     const todo = createTodo(this.state.inputValue);
     let arr = [];
-    
+
     if(this.state.todoListShow) {
       arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
       localStorage.setItem('ShowAll', JSON.stringify(arr));
@@ -80,11 +80,13 @@ class App extends React.Component  {
         todos: JSON.parse(localStorage.getItem('NoCompleted')),
       });
     }
+
     this._inputRef.current.focus();
   }
 
   handleTodoClick(id) {
     const currentTodoIndex = this.state.todos.findIndex(i => i.id === id);
+
     if (currentTodoIndex === -1) {
       return;
     }
@@ -95,7 +97,6 @@ class App extends React.Component  {
     newTodos[currentTodoIndex] = todo;
     localStorage.setItem('ShowAll', JSON.stringify(newTodos));
     
-
     this.setState({
       todos: newTodos,
     });
@@ -104,6 +105,7 @@ class App extends React.Component  {
   handleTodoRemoveClick(id) {
     let ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
     let todoListCompleted = [];
+    
     if(this.state.todoListShow) {
       todoListCompleted = ListTodo.filter(i => i.id !== id);
       console.log(todoListCompleted)
@@ -148,7 +150,7 @@ class App extends React.Component  {
         todoListShow: true,
         todoListCompleted: false,
         todoListNoCompleted: false,
-      })
+      });
     } else if(value === 'completed') {
       const todoListCompleted = showAll.filter(i => i.completed === true);
       localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
@@ -157,16 +159,16 @@ class App extends React.Component  {
         todoListShow: false,
         todoListCompleted: true,
         todoListNoCompleted: false,
-      })
+      });
     } else if(value === 'noCompleted'){
       const todoListNoCompleted = showAll.filter(i => i.completed === false);
       localStorage.setItem('NoCompleted', JSON.stringify(todoListNoCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('NoCompleted')),
         todoListShow: false,
-       todoListCompleted: false,
+        todoListCompleted: false,
         todoListNoCompleted: true,
-      })
+      });
     }
   }
 
@@ -174,22 +176,43 @@ class App extends React.Component  {
     return (
       <div className={s.App}>
         <div className={s.container}>
-          <Header
-            inputRef={this._inputRef}
-            value={this.state.inputValue}
-            onChangeText={this.onChangeInputText}
-            onClick={this.handleAddTodo}
-          />
-
-          <Filters
-            onChange={this.onChangeCompleted}
-          />
-
-          <TodoList
-            items={this.state.todos}
-            onTodoClick={this.handleTodoClick}
-            onTodoRemoveClick={this.handleTodoRemoveClick}
-          />
+          <Router>
+            <ul className={s.nav}>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+              <li>
+                <Link to="/help">Help</Link>
+              </li>
+            </ul>
+            <Switch>
+              <Route path='/about'>
+                <div className={s.about}>The application was created in order to understand what React.</div>
+              </Route>
+              <Route path='/help'>
+                <div className={s.help}>For all questions  write to the mail: maksimenko.maksim.2310@gmail.com</div>
+              </Route>
+              <Route path='/'>
+                <Header
+                  inputRef={this._inputRef}
+                  value={this.state.inputValue}
+                  onChangeText={this.onChangeInputText}
+                  onClick={this.handleAddTodo}
+                />
+                <Filters
+                  onChange={this.onChangeCompleted}
+                />
+                <TodoList
+                  items={this.state.todos}
+                  onTodoClick={this.handleTodoClick}
+                  onTodoRemoveClick={this.handleTodoRemoveClick}
+                />
+              </Route>
+            </Switch>
+          </Router>
           <footer>
             <div>
               Completed: {this.getCompletedCount()}

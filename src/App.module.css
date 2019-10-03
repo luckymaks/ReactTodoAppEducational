@@ -13,3 +13,19 @@
   border: 1px solid black;
 }
 
+.nav {
+  width: 350px;
+  display: flex;
+  list-style-type: none;
+  justify-content: space-around;
+  padding-left: 0;
+  padding-bottom: 15px;
+  padding-top: 15px;
+  margin: 0;
+  border-bottom: 1px solid black;
+}
+
+.about, .help {
+  padding: 15px;
+  border-bottom: 1px solid black;
+}

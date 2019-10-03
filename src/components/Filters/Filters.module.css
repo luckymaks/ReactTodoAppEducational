@@ -17,3 +17,14 @@
 .item:last-child {
     border-right: none;
 }
+.nav {
+    width: 350px;
+    display: flex;
+    list-style-type: none;
+    justify-content: space-around;
+    padding-left: 0;
+    text-underline-position: 
+}
+.content {
+    border-bottom: 1px solid black;
+}
