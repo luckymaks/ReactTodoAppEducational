@@ -57,7 +57,7 @@ class App extends React.Component  {
     let arr = [];
 
     if(this.state.todoListShow) {
-      arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
+      arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')) || this.state.todos);
       localStorage.setItem('ShowAll', JSON.stringify(arr));
       this.setState({
         inputValue: '',
@@ -108,7 +108,6 @@ class App extends React.Component  {
     
     if(this.state.todoListShow) {
       todoListCompleted = ListTodo.filter(i => i.id !== id);
-      console.log(todoListCompleted)
       localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('ShowAll')),
