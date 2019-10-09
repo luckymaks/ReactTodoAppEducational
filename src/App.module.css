@@ -10,6 +10,7 @@
 .container {
   max-width: 350px;
   min-height: 400px;
+  border-radius: 15px;
   border: 1px solid black;
 }
 
@@ -23,9 +24,43 @@
   padding-top: 15px;
   margin: 0;
   border-bottom: 1px solid black;
+  text-decoration: none;
+  
+}
+
+.nav > li > a {
+  text-decoration: none;
+}
+
+.link {
+  color: #62dbcb;
+  background-color: transparent;
+  background-image: none;
+  border-color: #62dbcb;
+  cursor: pointer;
+  border: 1px solid #62dbcb;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.link:hover {
+  color: #fff;
+  background-color: #62dbcb;
+  border-color: #62dbcb;
 }
 
 .about, .help {
   padding: 15px;
   border-bottom: 1px solid black;
+}
+
+.active {
+  color: #fff;
+  background-color: #62dbcb;
+  border-color: #62dbcb;
+}
+
+.footer {
+  padding: 10px;
 }

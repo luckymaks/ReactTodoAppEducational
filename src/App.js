@@ -1,9 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import logo from './logo.svg';
+import { BrowserRouter as Router, Switch, Route, Link, NavLink, Redirect } from "react-router-dom";
 import s from './App.module.css';
 import Header from './components/Header/Header';
-import TodoList from './components/TodoList/TodoList';
 import Filters from './components/Filters/Filters';
 import {createTodo} from './utils/creators';
 
@@ -13,9 +11,6 @@ class App extends React.Component  {
     this.state = {
       inputValue: '',
       todos: [],
-      todoListShow: true,
-      todoListCompleted: false,
-      todoListNoCompleted: false,
     };
     this._inputRef = React.createRef();
     this.onChangeInputText = this.onChangeInputText.bind(this);
@@ -25,7 +20,6 @@ class App extends React.Component  {
     this.getCompletedCount = this.getCompletedCount.bind(this);
     this.onChangeCompleted = this.onChangeCompleted.bind(this);
   }
-
   componentDidMount() {
     let list = [];
     const arrKeys = JSON.parse(localStorage.getItem('ShowAll'));
@@ -48,6 +42,8 @@ class App extends React.Component  {
 
   handleAddTodo() {
     const { inputValue } = this.state;
+    const pathName = window.location.pathname;
+    
 
     if(inputValue.trim().length === 0) {
       return;
@@ -56,21 +52,21 @@ class App extends React.Component  {
     const todo = createTodo(this.state.inputValue);
     let arr = [];
 
-    if(this.state.todoListShow) {
+    if(pathName === '/showAll') {
       arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')) || this.state.todos);
       localStorage.setItem('ShowAll', JSON.stringify(arr));
       this.setState({
         inputValue: '',
         todos: JSON.parse(localStorage.getItem('ShowAll')),
       });
-    } else if(this.state.todoListCompleted) {
+    } else if(pathName === '/completed') {
       arr = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
       localStorage.setItem('ShowAll', JSON.stringify(arr))
       this.setState({
         inputValue: '',
         todos: JSON.parse(localStorage.getItem('Completed')),
       });
-    } else if(this.state.todoListNoCompleted) {
+    } else if(pathName === '/noCompleted') {
       const arrShow = [todo].concat(JSON.parse(localStorage.getItem('ShowAll')));
       arr = [todo].concat(JSON.parse(localStorage.getItem('NoCompleted')));
       localStorage.setItem('NoCompleted', JSON.stringify(arr));
@@ -103,16 +99,17 @@ class App extends React.Component  {
   }
 
   handleTodoRemoveClick(id) {
+    const pathName = window.location.pathname;
     let ListTodo = JSON.parse(localStorage.getItem('ShowAll'));
     let todoListCompleted = [];
     
-    if(this.state.todoListShow) {
+    if(pathName === '/showAll') {
       todoListCompleted = ListTodo.filter(i => i.id !== id);
       localStorage.setItem('ShowAll', JSON.stringify(todoListCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('ShowAll')),
       });
-    } else if(this.state.todoListCompleted) {
+    } else if(pathName === '/completed') {
       const todoList = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
       localStorage.setItem('ShowAll', JSON.stringify(todoList));
       ListTodo = JSON.parse(localStorage.getItem('Completed'));
@@ -121,7 +118,7 @@ class App extends React.Component  {
       this.setState({
         todos: JSON.parse(localStorage.getItem('Completed')),
       });
-    } else if(this.state.todoListNoCompleted) {
+    } else if(pathName === '/noCompleted') {
       const todoList = JSON.parse(localStorage.getItem('ShowAll')).filter(i => i.id !== id);
       localStorage.setItem('ShowAll', JSON.stringify(todoList));
       ListTodo = JSON.parse(localStorage.getItem('NoCompleted'));
@@ -140,33 +137,25 @@ class App extends React.Component  {
   }
   
   onChangeCompleted(e) {
+    const pathName = window.location.pathname;
     const value = e.target.value;
     const showAll = JSON.parse(localStorage.getItem('ShowAll'));
     
-    if(value === 'showAll'){
+    if(pathName === '/showAll'){
       this.setState({
         todos: showAll,
-        todoListShow: true,
-        todoListCompleted: false,
-        todoListNoCompleted: false,
       });
-    } else if(value === 'completed') {
+    } else if(pathName === '/completed') {
       const todoListCompleted = showAll.filter(i => i.completed === true);
       localStorage.setItem('Completed', JSON.stringify(todoListCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('Completed')),
-        todoListShow: false,
-        todoListCompleted: true,
-        todoListNoCompleted: false,
       });
-    } else if(value === 'noCompleted'){
+    } else if(pathName === '/noCompleted'){
       const todoListNoCompleted = showAll.filter(i => i.completed === false);
       localStorage.setItem('NoCompleted', JSON.stringify(todoListNoCompleted));
       this.setState({
         todos: JSON.parse(localStorage.getItem('NoCompleted')),
-        todoListShow: false,
-        todoListCompleted: false,
-        todoListNoCompleted: true,
       });
     }
   }
@@ -178,13 +167,13 @@ class App extends React.Component  {
           <Router>
             <ul className={s.nav}>
               <li>
-                <Link to="/">Home</Link>
+                <NavLink to="/home" className={s.link} activeClassName={s.active} >Home</NavLink>
               </li>
               <li>
-                <Link to="/about">About</Link>
+                <NavLink to="/about" className={s.link} activeClassName={s.active} >About</NavLink>
               </li>
               <li>
-                <Link to="/help">Help</Link>
+                <NavLink to="/help" className={s.link} activeClassName={s.active} >Help</NavLink>
               </li>
             </ul>
             <Switch>
@@ -194,7 +183,7 @@ class App extends React.Component  {
               <Route path='/help'>
                 <div className={s.help}>For all questions  write to the mail: maksimenko.maksim.2310@gmail.com</div>
               </Route>
-              <Route path='/'>
+              <Route path='/home'>
                 <Header
                   inputRef={this._inputRef}
                   value={this.state.inputValue}
@@ -203,16 +192,15 @@ class App extends React.Component  {
                 />
                 <Filters
                   onChange={this.onChangeCompleted}
-                />
-                <TodoList
-                  items={this.state.todos}
-                  onTodoClick={this.handleTodoClick}
-                  onTodoRemoveClick={this.handleTodoRemoveClick}
+                  itemsTodo={this.state.todos}
+                  onAddTodoClick={this.handleTodoClick}
+                  onRemoveClick={this.handleTodoRemoveClick}
                 />
               </Route>
+              <Redirect from='/' to='/home' />
             </Switch>
           </Router>
-          <footer>
+          <footer className={s.footer}>
             <div>
               Completed: {this.getCompletedCount()}
             </div>

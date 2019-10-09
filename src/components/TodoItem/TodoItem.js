@@ -21,7 +21,7 @@ const TodoItem = ({
         >
             {title}
         </div>
-        <button onClick={() => onRemoveClick(id)}>X</button>
+        <span onClick={() => onRemoveClick(id)} className={s.close}></span>
     </div>
 )};
 

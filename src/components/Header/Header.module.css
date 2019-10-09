@@ -4,3 +4,23 @@
     border-bottom: 1px solid black;
     justify-content: space-around;
 }
+.input {
+    border-radius: 5px;
+    border: 1px solid #535755;
+}
+.btn {
+    color: #28a745;
+    background-color: transparent;
+    background-image: none;
+    border-color: #28a745;
+    cursor: pointer;
+    border: 1px solid #28a745;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    border-radius: 5px;
+    padding: 5px;
+}
+.btn:hover {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+}

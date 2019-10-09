@@ -10,11 +10,17 @@ const TodoList = ({
 }) => (
     <div className={s.container}>
         <input
+            className={s.input}
             value={value}
             ref={inputRef}
             onChange={event => onChangeText(event.target.value)}
         />
-        <button onClick={onClick}>Add todo</button>
+        <button
+            onClick={onClick}
+            className={s.btn}
+        >
+            Add todo
+        </button>
     </div>
 );
 
